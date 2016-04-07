@@ -1,0 +1,11 @@
+{
+"name": "RequestManager",
+"frameworks": "Arduino",
+"keywords": "",
+"description": "Request manager library for stock esp8266",
+"authors":
+[{
+        "name": "James Hicklin"
+}]
+}
+

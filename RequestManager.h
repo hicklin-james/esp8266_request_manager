@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <stdarg.h>
+#include <SoftwareSerial.h>
 
 #define TCP_CONNECT_TIMEOUT 4000
 #define GET_REQUEST_LENGTH_TIMEOUT 1000

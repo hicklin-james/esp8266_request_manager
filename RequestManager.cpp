@@ -31,7 +31,7 @@ bool RequestManager::disconnect() {
   char disconnectCmd[10] = "AT+CWQAP";
   const char *p[] = {"OK"};
   bool r = sendCommand(disconnectCmd, NETWORK_CONNECTION_TIMEOUT, false, p, 1);
-  _isConnected = r;
+  _isConnected = !r;
   return r;
 }
 

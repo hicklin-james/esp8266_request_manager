@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <stdarg.h>
 #include <SoftwareSerial.h>
-#include <avr/pgmspace.h>
 #include <MemoryFree.h>
 
 #define TCP_CONNECT_TIMEOUT 4000
@@ -39,6 +38,7 @@ class RequestManager {
 
   private:
     bool connectToNetwork(const char *ssid, const char *password);
+    bool disconnect();
     bool sendCommand(const char *cmd, int timeout, bool write, const char* successStrs[], int successStrsLength);
     bool sendRequest(const char *req, int reqLength, const char *successStrs[], int successStrsLength);
     void generateTcpConnectionString(char *buf, const char *host, int port);
@@ -46,8 +46,7 @@ class RequestManager {
     void generateReqLenCommand(char *buf, int reqLength);
     void sendToSerial(bool write, const char *cmd);
     int copyCharToStr(char c, char *str, int index, int maxLength);
-    void disconnect();
-    void readResponseData(char *buf);
+    //void readResponseData(char *buf);
     
     bool _isConnected;
 

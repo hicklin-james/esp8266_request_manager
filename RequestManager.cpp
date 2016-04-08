@@ -88,8 +88,6 @@ bool RequestManager::get(const char *host, const char *req, int port) {
 
     const char* p3[] = {"SEND OK"};
     bool reqStatus = sendRequest(httpReq, reqLength, p3, 1);
-    Serial.print("freeMemory()=");
-    Serial.println(freeMemory());
 
     bool closeStatus = sendCommand(closeCommand, CLOSE_TCP_TIMEOUT, false, p1, 4);
     if (reqStatus && closeStatus) {
@@ -107,8 +105,6 @@ bool RequestManager::get(const char *host, const char *req, int port) {
 **/
 /**
 void RequestManager::readResponseData(char *buf) {
-  Serial.print("freeMemory()=");
-  Serial.println(freeMemory());
   int max_length = HTTP_RESPONSE_INITIAL_SIZE;
   int data_index = 0;
   unsigned long start = millis();

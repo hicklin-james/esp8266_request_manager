@@ -11,8 +11,6 @@ Example use:
 ```
 #include <SoftwareSerial.h>
 #include <RequestManager.h>
-#include <avr/pgmspace.h>
-#include <MemoryFree.h>
 
 const char ssid[8] = "my_ssid";
 const char password[14] = "my_wifi_password";

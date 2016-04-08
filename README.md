@@ -27,3 +27,6 @@ void loop() {
   delay(10000);
 }
 ```
+
+###To Use SoftwareSerial
+Uncomment `#define ESP_USE_SOFTWARE_SERIAL` in RequestManager.h

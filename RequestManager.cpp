@@ -280,7 +280,7 @@ bool RequestManager::sendCommand(const char *cmd, int timeout, bool write, const
   sendToSerial(write, cmd);
 
   unsigned long start = millis();
-  char *data = malloc((HTTP_RESPONSE_INITIAL_SIZE+1) * sizeof(char)); //char[HTTP_RESPONSE_INITIAL_SIZE+1]();
+  char *data = (char*)malloc((HTTP_RESPONSE_INITIAL_SIZE+1) * sizeof(char)); //char[HTTP_RESPONSE_INITIAL_SIZE+1]();
   memset(data, 0, HTTP_RESPONSE_INITIAL_SIZE+1);
 
   // for (int i = 0; i <= HTTP_RESPONSE_INITIAL_SIZE; i++) {

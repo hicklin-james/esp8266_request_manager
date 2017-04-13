@@ -222,7 +222,7 @@ void RequestManager::generateHttpPostReqString(char *buf, const char *host, cons
   const char connUserAgent[100] = "\r\nConnection: keep-alive\r\nUser-Agent: Arduino\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n";
   strcat(buf, connUserAgent);
   strcat(buf, body);
-  strcat(buf, "\r\n");
+  Serial.write(buf);
 }
 
 /**

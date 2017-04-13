@@ -34,6 +34,7 @@ class RequestManager {
     void connect(const char *ssid, const char *password);
     bool isConnected() const;
     bool get(const char *host, const char *req, int port);
+    bool post(const char *host, const char *req, const char *body, int port);
 
   private:
     bool connectToNetwork(const char *ssid, const char *password);
@@ -41,7 +42,8 @@ class RequestManager {
     bool sendCommand(const char *cmd, int timeout, bool write, const char* successStrs[], int successStrsLength);
     bool sendRequest(const char *req, int reqLength, const char *successStrs[], int successStrsLength);
     void generateTcpConnectionString(char *buf, const char *host, int port);
-    void generateHttpReqString(char *buf, const char *host, const char *req);
+    void generateHttpGetReqString(char *buf, const char *host, const char *req);
+    void generateHttpPostReqString(char *buf, const char *host, const char *req, const char *body);
     void generateReqLenCommand(char *buf, int reqLength);
     void sendToSerial(bool write, const char *cmd);
     int copyCharToStr(char c, char *str, int index, int maxLength);

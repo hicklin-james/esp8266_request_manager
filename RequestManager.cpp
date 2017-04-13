@@ -77,17 +77,55 @@ bool RequestManager::get(const char *host, const char *req, int port) {
   _serial->flush();
   const char closeCommand[12] = "AT+CIPCLOSE";
   const char* p1[] = {"Linked", "ERROR", "we must restart", "OK"};
-  char tcpConnector[128] {0};
-  generateTcpConnectionString(tcpConnector, host, port);
+  char stringBuffer[256] {0};
+  generateTcpConnectionString(stringBuffer, host, port);
   const char* p2[] = {"OK", "ALREADY CNNECTED"};
-  bool tcpStatus = sendCommand(tcpConnector, TCP_CONNECT_TIMEOUT, false, p2, 2);
+  bool tcpStatus = sendCommand(stringBuffer, TCP_CONNECT_TIMEOUT, false, p2, 2);
+  // clear the stringBuffer for next command
+  memset(&stringBuffer, 0, 256);
   if (tcpStatus) {
-    char httpReq[256] {0};
-    generateHttpReqString(httpReq, host, req);
-    int reqLength = (int)strlen(httpReq);
+    generateHttpGetReqString(stringBuffer, host, req);
+    int reqLength = (int)strlen(stringBuffer);
 
     const char* p3[] = {"SEND OK"};
-    bool reqStatus = sendRequest(httpReq, reqLength, p3, 1);
+    bool reqStatus = sendRequest(stringBuffer, reqLength, p3, 1);
+
+    bool closeStatus = sendCommand(closeCommand, CLOSE_TCP_TIMEOUT, false, p1, 4);
+    if (reqStatus && closeStatus) {
+      return true;
+    }
+  }
+  sendCommand(closeCommand, CLOSE_TCP_TIMEOUT, false, p1, 4);
+  return false;
+}
+
+/**
+  Params:
+    const char *host: The host url to make the request to (e.g. "jameshicklin.com")
+    const char *req: The req uri (e.g. "/users/index")
+    const char *body: the req body (e.g. "param1=value1&param2=value2")
+    int: The port to connect to (e.g. 80)
+  Returns:
+    bool: A boolean indicating whether the request succeeded or not
+          NOTE - a success is simply a request that was sent to the server.
+          It says nothing about whether a response was received or not.
+**/
+bool RequestManager::post(const char *host, const char *req, const char *body, int port) {
+  _serial->flush();
+  const char closeCommand[12] = "AT+CIPCLOSE";
+  const char* p1[] = {"Linked", "ERROR", "we must restart", "OK"};
+  char stringBuffer[256] {0};
+  generateTcpConnectionString(stringBuffer, host, port);
+  const char* p2[] = {"OK", "ALREADY CNNECTED"};
+  bool tcpStatus = sendCommand(stringBuffer, TCP_CONNECT_TIMEOUT, false, p2, 2);
+  // clear the stringBuffer for next command
+  memset(&stringBuffer, 0, 256);
+  if (tcpStatus) {
+    generateHttpPostReqString(stringBuffer, host, req, body);
+    int reqLength = (int)strlen(stringBuffer);
+
+    const char* p3[] = {"SEND OK"};
+    bool reqStatus = sendRequest(stringBuffer, reqLength, p3, 1);
 
     bool closeStatus = sendCommand(closeCommand, CLOSE_TCP_TIMEOUT, false, p1, 4);
     if (reqStatus && closeStatus) {
@@ -144,10 +182,10 @@ void RequestManager::generateReqLenCommand(char *buf, int reqLength) {
   Returns:
     void
   Information:
-    This function fills the buf array with the actual HTTP request content. See the HTTP/1.1
+    This function fills the buf array with the actual HTTP GET request content. See the HTTP/1.1
     specifications to see why it is formed the way it is.
 **/
-void RequestManager::generateHttpReqString(char *buf, const char *host, const char *req) {
+void RequestManager::generateHttpGetReqString(char *buf, const char *host, const char *req) {
   strcat(buf, "GET ");
   strcat(buf, req);
   const char httpHost[18] = " HTTP/1.1\r\nHost: ";
@@ -155,6 +193,36 @@ void RequestManager::generateHttpReqString(char *buf, const char *host, const ch
   strcat(buf, host);
   const char connUserAgent[50] = "\r\nConnection: keep-alive\r\nUser-Agent: Arduino\r\n\r\n";
   strcat(buf, connUserAgent);
+}
+
+/**
+  Params:
+    char *buf: pointer to a char array - assume that it is big enough to hold the command
+    const char *host: pointer to a char array that corresponds to the host
+    const char *req: pointer to a char array that corresponds to the request uri
+    const char *body: pointer to a char array that corresponds to the body of the post request
+  Returns:
+    void
+  Information:
+    This function fills the buf array with the actual HTTP POST request content. See the HTTP/1.1
+    specifications to see why it is formed the way it is.
+**/
+void RequestManager::generateHttpPostReqString(char *buf, const char *host, const char *req, const char *body) {
+  strcat(buf, "POST ");
+  strcat(buf, req);
+  const char httpHost[20] = " HTTP/1.1\r\nHost: ";
+  strcat(buf, httpHost);
+  strcat(buf, host);
+  const char httpContentLength[19] = "\r\nContent-Length: ";
+  int contentLength = strlen(body);
+  char contentLengthString[5];
+  sprintf(contentLengthString, "%d", contentLength);
+  strcat(buf, httpContentLength);
+  strcat(buf, contentLengthString);
+  const char connUserAgent[100] = "\r\nConnection: keep-alive\r\nUser-Agent: Arduino\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n";
+  strcat(buf, connUserAgent);
+  strcat(buf, body);
+  strcat(buf, "\r\n");
 }
 
 /**

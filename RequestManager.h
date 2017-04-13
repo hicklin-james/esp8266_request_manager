@@ -17,6 +17,8 @@
 // uncomment this to use SoftwareSerial
 #define ESP_USE_SOFTWARE_SERIAL
 
+#define BAUD_RATE 9600
+
 struct CommandAttrs {
   char *response;
   bool success;

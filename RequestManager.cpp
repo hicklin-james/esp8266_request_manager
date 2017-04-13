@@ -11,11 +11,11 @@
 **/
 #ifdef ESP_USE_SOFTWARE_SERIAL
   RequestManager::RequestManager(SoftwareSerial &ss) : _serial(&ss) {
-    _serial->begin(9600);
+    _serial->begin(BAUD_RATE);
   }
 #else
   RequestManager::RequestManager(HardwareSerial &hs) : _serial(&hs) {
-    _serial->begin(9600);
+    _serial->begin(BAUD_RATE);
   }
 #endif
 
